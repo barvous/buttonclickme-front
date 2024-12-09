@@ -1,2 +1,2 @@
 # buttonclickme
-The API of the project "buttonclick.me".
+The application of the project "buttonclick.me".
