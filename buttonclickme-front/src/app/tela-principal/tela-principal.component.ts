@@ -7,5 +7,11 @@ import { Component } from '@angular/core';
   styleUrl: './tela-principal.component.css'
 })
 export class TelaPrincipalComponent {
+  userCounter: number = 35;
+  globalCounter: number = 1487;
 
+  incrementCounter(): void {
+    this.userCounter++;
+    this.globalCounter++;
+  }
 }
