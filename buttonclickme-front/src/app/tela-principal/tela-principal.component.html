@@ -1,14 +1,24 @@
-<div class="counter-table">
-  <div>
-    <p>Você</p>
-    <p id="user-counter">{{userCounter}}</p>
-  </div>
-  <div>
-    <p>Global</p>
-    <p id="global-counter">{{globalCounter}}</p>
-  </div>
+<div class="grid-container">
+  <section class="message-list">
+    <!-- Conteúdo da lista de mensagens -->
+  </section>
+
+  <section class="viewboard">
+    <div class="counter-table">
+      <div>
+        <p>Você</p>
+        <p id="user-counter">{{userCounter}}</p>
+      </div>
+      <div>
+        <p>Global</p>
+        <p id="global-counter">{{globalCounter}}</p>
+      </div>
+    </div>
+    <div class="main-counter" id="main-counter">{{userCounter}}</div>
+    <button class="principal-button" (click)="incrementCounter()">Button</button>
+  </section>
+
+  <section class="additional-information">
+    <!-- Informações adicionais -->
+  </section>
 </div>
-
-<div class="main-counter" id="main-counter">{{userCounter}}</div>
-
-<button class="button" (click)="incrementCounter()">Button</button>
