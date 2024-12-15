@@ -1,6 +1,13 @@
 import { ConstantLocalStorageKeys } from '../constant/LocalStorageKeys';
 
 export class LocalStorageCounterService {
+
+  public resetCountersCache(){
+    localStorage.setItem(ConstantLocalStorageKeys.USER_COUNTER, "0");
+    
+    localStorage.setItem(ConstantLocalStorageKeys.GLOBAL_COUNTER, "0");
+  }
+
   public getUserCounter(): number {
     let userCounterCacheValue: string | null = localStorage.getItem(
       ConstantLocalStorageKeys.USER_COUNTER

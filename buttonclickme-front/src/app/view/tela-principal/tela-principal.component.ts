@@ -1,5 +1,12 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { LocalStorageCounterService } from '../../service/LocalStorageService';
+import { CounterApiService } from '../../service/CounterApiService';
+import { CounterApiServiceResponse } from '../../service/CounterApiServiceResponse';
+
+type CounterType = 'personal' | 'global';
+
+const COUNTER_TYPE_PERSONAL: CounterType = 'personal';
+const COUNTER_TYPE_GLOBAL: CounterType = 'global';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +16,7 @@ import { LocalStorageCounterService } from '../../service/LocalStorageService';
   imports: [],
   templateUrl: './tela-principal.component.html',
   styleUrl: './tela-principal.component.css',
-  providers: [LocalStorageCounterService],
+  providers: [LocalStorageCounterService, CounterApiService],
 })
 export class TelaPrincipalComponent implements OnInit {
   userCounter: number = 0;
@@ -20,18 +27,23 @@ export class TelaPrincipalComponent implements OnInit {
   private saveTimeout: any;
   private SAVE_DELAY = 1500; // 1.5 segundos
 
-  constructor(private localStorageService: LocalStorageCounterService) {}
+  constructor(
+    private localStorageService: LocalStorageCounterService,
+    private counterApiService: CounterApiService
+  ) {}
 
   ngOnInit(): void {
     this.initCounters();
   }
 
   private initCounters() {
-    let currentUserCounter: number = this.localStorageService.getUserCounter();
-    this.userCounter = currentUserCounter;
-    this.mainUserCounter = currentUserCounter;
+    
+    let currentUserCounter: string | null = localStorage.getItem("user_counter_db");
+    this.userCounter = currentUserCounter ? parseInt(currentUserCounter) : 0;
+    this.mainUserCounter = currentUserCounter ? parseInt(currentUserCounter) : 0;
 
-    this.globalCounter = this.localStorageService.getGlobalCounter();
+    let currentGlobalCounter: string | null = localStorage.getItem("global_counter_db");
+    this.globalCounter = currentGlobalCounter ? parseInt(currentGlobalCounter) : 0;
   }
 
   public saveCounters() {
@@ -59,13 +71,43 @@ export class TelaPrincipalComponent implements OnInit {
   private saveCountersInDB(numberToAdd: number): void {
     console.log('Salvando contadores no banco de dados...');
 
-    this.userCounter = this.localStorageService.getUserCounter();
-    this.globalCounter = this.localStorageService.getGlobalCounter();
+    //TODO: move this save logic to counterApiService
+    this.counterApiService
+      .saveCounter(COUNTER_TYPE_PERSONAL, numberToAdd)
+      .subscribe({
+        next: (response: CounterApiServiceResponse) => {
+          if (response.status == 'error') {
+            throw Error('An unexpected error occurs: ' + response.message);
+          }
+
+          this.userCounter = response.newValue;
+        },
+        error: (err) => {
+          console.error('An unexpected error occurs: ', err.error);
+        },
+      });
+
+    //TODO: move this save logic to counterApiService
+    this.counterApiService
+      .saveCounter(COUNTER_TYPE_GLOBAL, numberToAdd)
+      .subscribe({
+        next: (response: CounterApiServiceResponse) => {
+          if (response.status == 'error') {
+            throw Error('An unexpected error occurs: ' + response.message);
+          }
+
+          this.globalCounter = response.newValue;
+        },
+        error: (err) => {
+          console.error('An unexpected error occurs: ', err.error);
+        },
+      });
 
     console.log(
       `User Counter: ${this.userCounter}, Global Counter: ${this.globalCounter}`
     );
 
+    this.localStorageService.resetCountersCache();
     this.numberToAdd = 0;
   }
 }
