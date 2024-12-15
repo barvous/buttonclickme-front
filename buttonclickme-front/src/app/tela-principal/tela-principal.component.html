@@ -1,24 +1,35 @@
 <div class="grid-container">
+  <!-- Seção da lista de mensagens -->
   <section class="message-list">
     <!-- Conteúdo da lista de mensagens -->
   </section>
 
   <section class="viewboard">
-    <div class="counter-table">
-      <div>
-        <p>Você</p>
-        <p id="user-counter">{{userCounter}}</p>
-      </div>
-      <div>
-        <p>Global</p>
-        <p id="global-counter">{{globalCounter}}</p>
+    <div class="top-section">
+      <div class="counter-table">
+        <div>
+          <p>Você</p>
+          <p id="user-counter">{{userCounter}}</p>
+        </div>
+        <div>
+          <p>Global</p>
+          <p id="global-counter">{{globalCounter}}</p>
+        </div>
       </div>
     </div>
-    <div class="main-counter" id="main-counter">{{userCounter}}</div>
-    <button class="principal-button" (click)="incrementCounter()">Button</button>
+
+    <div class="center-section">
+      <div class="main-counter" id="main-counter">{{userCounter}}</div>
+      <button class="principal-button" (click)="incrementCounter()">Button</button>
+    </div>
+
+    <div class="bottom-section">
+      <!--  -->
+    </div>
   </section>
 
+  <!-- Seção de informações adicionais -->
   <section class="additional-information">
-    <!-- Informações adicionais -->
+    <!-- Conteúdo adicional -->
   </section>
 </div>
