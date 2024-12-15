@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TelaPrincipalComponent } from "./tela-principal/tela-principal.component";
+import { TelaPrincipalComponent } from "./view/tela-principal/tela-principal.component";
 
 @Component({
   selector: 'app-root',
