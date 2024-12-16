@@ -21,10 +21,20 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              "src/_redirects",
+              {
+                "glob": "favicon.ico",
+                "input": "src",
+                "output": "/"
+              },
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "src/assets",
+                "output": "/assets"
+              },
+              {
+                "glob": "_redirects",
+                "input": "src",
+                "output": "/"
               }
             ],
             "styles": [
@@ -81,8 +91,19 @@
             "tsConfig": "tsconfig.spec.json",
             "assets": [
               {
+                "glob": "favicon.ico",
+                "input": "src",
+                "output": "/"
+              },
+              {
                 "glob": "**/*",
-                "input": "public"
+                "input": "src/assets",
+                "output": "/assets"
+              },
+              {
+                "glob": "_redirects",
+                "input": "src",
+                "output": "/"
               }
             ],
             "styles": [
