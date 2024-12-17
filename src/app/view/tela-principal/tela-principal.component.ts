@@ -1,7 +1,10 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { LocalStorageCounterService } from '../../service/LocalStorageService';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { AntiCheatService } from '../../service/AntiCheatService';
 import { CounterApiService } from '../../service/CounterApiService';
 import { CounterApiServiceResponse } from '../../service/CounterApiServiceResponse';
+import { LocalStorageCounterService } from '../../service/LocalStorageService';
+import { DialogComportamentoSuspeitoComponent } from '../dialog-comportamento-suspeito/dialog-comportamento-suspeito.component';
 
 type CounterType = 'personal' | 'global';
 
@@ -23,30 +26,73 @@ export class TelaPrincipalComponent implements OnInit {
   mainUserCounter: number = 0;
   globalCounter: number = 0;
   numberToAdd: number = 0;
+  isButtonDisabled: boolean = false; // Estado do botão para bloqueio
 
   private saveTimeout: any;
   private SAVE_DELAY = 1500; // 1.5 segundos
 
   constructor(
     private localStorageService: LocalStorageCounterService,
-    private counterApiService: CounterApiService
+    private counterApiService: CounterApiService,
+    private antiCheatService: AntiCheatService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
     this.initCounters();
   }
 
-  private initCounters() {
-    
-    let currentUserCounter: string | null = localStorage.getItem("user_counter_db");
-    this.userCounter = currentUserCounter ? parseInt(currentUserCounter) : 0;
-    this.mainUserCounter = currentUserCounter ? parseInt(currentUserCounter) : 0;
+  openDialogComportamentoSuspeitoComponent(): void {
+    let dialogRef: MatDialogRef<DialogComportamentoSuspeitoComponent> =
+      this.dialog.open(DialogComportamentoSuspeitoComponent, {
+        width: '400px',
+      });
 
-    let currentGlobalCounter: string | null = localStorage.getItem("global_counter_db");
-    this.globalCounter = currentGlobalCounter ? parseInt(currentGlobalCounter) : 0;
+    dialogRef.beforeClosed().subscribe((response: any) => {
+      console.log('pronto, está habilitado de novo');
+      this.isButtonDisabled = false;
+    });
+  }
+
+  private initCounters() {
+    let currentUserCounter: string | null =
+      localStorage.getItem('user_counter_db');
+    this.userCounter = currentUserCounter ? parseInt(currentUserCounter) : 0;
+    this.mainUserCounter = currentUserCounter
+      ? parseInt(currentUserCounter)
+      : 0;
+
+    let currentGlobalCounter: string | null =
+      localStorage.getItem('global_counter_db');
+    this.globalCounter = currentGlobalCounter
+      ? parseInt(currentGlobalCounter)
+      : 0;
   }
 
   public saveCounters() {
+    if (this.isButtonDisabled == true) {
+      console.log('entrei');
+      this.openDialogComportamentoSuspeitoComponent();
+      return;
+    }
+
+    if (!this.antiCheatService.isClickAllowed(this.mainUserCounter)) {
+      this.isButtonDisabled = this.antiCheatService.isButtonBlocked();
+
+      //TODO: refactor
+      let currentUserCounter: string | null =
+        localStorage.getItem('user_counter_db');
+
+      this.userCounter = 0;
+      this.mainUserCounter = currentUserCounter
+        ? parseInt(currentUserCounter)
+        : 0;
+
+      this.openDialogComportamentoSuspeitoComponent();
+
+      return;
+    }
+
     this.numberToAdd++;
     this.mainUserCounter++;
 
@@ -57,12 +103,10 @@ export class TelaPrincipalComponent implements OnInit {
   }
 
   private initTimeToSaveInDB(numberToAdd: number): void {
-    // Limpa o temporizador anterior
     if (this.saveTimeout) {
       clearTimeout(this.saveTimeout);
     }
 
-    // Inicia um novo temporizador
     this.saveTimeout = setTimeout(() => {
       this.saveCountersInDB(numberToAdd);
     }, this.SAVE_DELAY);
@@ -71,15 +115,13 @@ export class TelaPrincipalComponent implements OnInit {
   private saveCountersInDB(numberToAdd: number): void {
     console.log('Salvando contadores no banco de dados...');
 
-    //TODO: move this save logic to counterApiService
     this.counterApiService
       .saveCounter(COUNTER_TYPE_PERSONAL, numberToAdd)
       .subscribe({
         next: (response: CounterApiServiceResponse) => {
-          if (response.status == 'error') {
+          if (response.status === 'error') {
             throw Error('An unexpected error occurs: ' + response.message);
           }
-
           this.userCounter = response.newValue;
         },
         error: (err) => {
@@ -87,15 +129,13 @@ export class TelaPrincipalComponent implements OnInit {
         },
       });
 
-    //TODO: move this save logic to counterApiService
     this.counterApiService
       .saveCounter(COUNTER_TYPE_GLOBAL, numberToAdd)
       .subscribe({
         next: (response: CounterApiServiceResponse) => {
-          if (response.status == 'error') {
+          if (response.status === 'error') {
             throw Error('An unexpected error occurs: ' + response.message);
           }
-
           this.globalCounter = response.newValue;
         },
         error: (err) => {

@@ -21,7 +21,9 @@
 
     <div class="center-section">
       <div class="main-counter" id="main-counter">{{mainUserCounter}}</div>
-      <button class="principal-button" (click)="saveCounters()">Button</button>
+      <button class="principal-button" [disabled]="isButtonDisabled" (click)="saveCounters()">
+        Button
+      </button>
     </div>
 
     <div class="bottom-section">
