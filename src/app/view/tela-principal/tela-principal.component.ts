@@ -10,6 +10,7 @@ type CounterType = 'personal' | 'global';
 
 const COUNTER_TYPE_PERSONAL: CounterType = 'personal';
 const COUNTER_TYPE_GLOBAL: CounterType = 'global';
+const USER_CHEATED_LOCAL_STORAGE: string = 'is_cheat';
 
 @Injectable({
   providedIn: 'root',
@@ -40,6 +41,15 @@ export class TelaPrincipalComponent implements OnInit {
 
   ngOnInit(): void {
     this.initCounters();
+
+    let isUserCheatedLocalStorage: string | null = localStorage.getItem(
+      USER_CHEATED_LOCAL_STORAGE
+    );
+    let isUserCheated: boolean = isUserCheatedLocalStorage === 'true';
+
+    if (isUserCheated) {
+      this.openDialogComportamentoSuspeitoComponent();
+    }
   }
 
   openDialogComportamentoSuspeitoComponent(): void {
@@ -49,8 +59,7 @@ export class TelaPrincipalComponent implements OnInit {
       });
 
     dialogRef.beforeClosed().subscribe((response: any) => {
-      console.log('pronto, está habilitado de novo');
-      this.isButtonDisabled = false;
+      localStorage.setItem(USER_CHEATED_LOCAL_STORAGE, 'false');
     });
   }
 
@@ -75,24 +84,14 @@ export class TelaPrincipalComponent implements OnInit {
       return;
     }
 
-    if (!this.antiCheatService.isClickAllowed(this.mainUserCounter)) {
-      this.isButtonDisabled = true;
+    let isClickAllowed: boolean = this.antiCheatService.isClickAllowed(
+      this.mainUserCounter
+    );
 
-      //TODO: refactor
-      let currentUserCounter: string | null =
-        localStorage.getItem('user_counter_db');
+    if (!isClickAllowed) {
+      window.location.reload();
+      localStorage.setItem(USER_CHEATED_LOCAL_STORAGE, 'true');
 
-      this.mainUserCounter = currentUserCounter
-        ? parseInt(currentUserCounter)
-        : 0;
-      this.userCounter = this.mainUserCounter;
-
-      this.openDialogComportamentoSuspeitoComponent();
-      /*
-      É necessário chamar essa função dessa forma apenas para reiniciar o contador do banco de dados
-       de forma "Vazia"
-      */
-      this.initTimeToSaveInDB(0);
       return;
     }
 

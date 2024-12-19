@@ -7,9 +7,12 @@ import { MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./dialog-comportamento-suspeito.component.css'],
 })
 export class DialogComportamentoSuspeitoComponent {
-  constructor(private dialogRef: MatDialogRef<DialogComportamentoSuspeitoComponent>) {}
+  constructor(
+    private dialogRef: MatDialogRef<DialogComportamentoSuspeitoComponent>
+  ) {}
 
   public onClose(): void {
+    window.location.reload();
     this.dialogRef.close();
   }
 }
