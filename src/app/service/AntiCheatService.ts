@@ -11,7 +11,6 @@ const RANGE_THRESHOLD = 20; // Tolerância de intervalo em ms para cima e para b
 export class AntiCheatService {
   private clickTimestamps: number[] = [];
   private lastValidClickCount: number = 0; // Salva a última contagem válida de cliques
-  private isBlocked: boolean = false; // Estado para saber se o botão está bloqueado
 
   constructor() {}
 
@@ -56,13 +55,8 @@ export class AntiCheatService {
       }
     }
 
-    this.isBlocked = false;
     this.lastValidClickCount = currentClickCount;
     return true;
-  }
-
-  public isButtonBlocked(): boolean {
-    return this.isBlocked;
   }
 
   private calculateIntervals(timestamps: number[]): number[] {
@@ -103,6 +97,5 @@ export class AntiCheatService {
   private blockClicks(currentClickCount: number): void {
     console.warn(`Clique suspeito detectado! Contagem de cliques foi resetada para o último valor válido: ${this.lastValidClickCount}`);
     this.clickTimestamps = [];
-    this.isBlocked = true; // Define o estado de bloqueio
   }
 }

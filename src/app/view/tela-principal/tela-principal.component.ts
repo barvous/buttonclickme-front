@@ -71,25 +71,28 @@ export class TelaPrincipalComponent implements OnInit {
 
   public saveCounters() {
     if (this.isButtonDisabled == true) {
-      console.log('entrei');
       this.openDialogComportamentoSuspeitoComponent();
       return;
     }
 
     if (!this.antiCheatService.isClickAllowed(this.mainUserCounter)) {
-      this.isButtonDisabled = this.antiCheatService.isButtonBlocked();
+      this.isButtonDisabled = true;
 
       //TODO: refactor
       let currentUserCounter: string | null =
         localStorage.getItem('user_counter_db');
 
-      this.userCounter = 0;
       this.mainUserCounter = currentUserCounter
         ? parseInt(currentUserCounter)
         : 0;
+      this.userCounter = this.mainUserCounter;
 
       this.openDialogComportamentoSuspeitoComponent();
-
+      /*
+      É necessário chamar essa função dessa forma apenas para reiniciar o contador do banco de dados
+       de forma "Vazia"
+      */
+      this.initTimeToSaveInDB(0);
       return;
     }
 
