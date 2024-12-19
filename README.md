@@ -58,11 +58,7 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
 
-
-
-
-Script para teste do anticheat:
-
+### Script 1 - Anticheat
 
 /**
 
@@ -75,8 +71,8 @@ Script para teste do anticheat:
   const button = document.querySelector(buttonSelector);
 
   if (!button) {
-    console.error('Botão não encontrado!');
-    return;
+  console.error('Botão não encontrado!');
+  return;
   }
 
   console.log('Iniciando teste de cliques automatizados...');
@@ -84,19 +80,45 @@ Script para teste do anticheat:
   let clickCount = 0;
 
   const clickInterval = setInterval(() => {
-    if (clickCount >= totalClicks) {
-      clearInterval(clickInterval);
-      console.log('Teste concluído!');
-      return;
-    }
+  if (clickCount >= totalClicks) {
+  clearInterval(clickInterval);
+  console.log('Teste concluído!');
+  return;
+  }
 
-    button.click();
-    console.log(`Clique ${clickCount + 1} enviado`);
+  button.click();
+  console.log(`Clique ${clickCount + 1} enviado`);
 
-    clickCount++;
+  clickCount++;
   }, intervalBetweenClicks);
-}
-
-
+  }
 
 call function: simulateClicks('.principal-button', 50, 100);
+
+
+### Script 2 - Anticheat
+
+Este script faz clicks aleatórios com base em um range determinado
+
+let clickInfinito = true;
+let btn = document.querySelector('.principal-button')
+function simularClick(timeout) {
+    let modificador = Math.floor(Math.random() * 2) == 1 ? 1 : -1;
+    let offsetRandom = Math.floor(Math.random() * 40) * (modificador);
+
+    if (clickInfinito) {
+        let offset = timeout + offsetRandom;
+        setTimeout(() => {btn.click(); simularClick(timeout)}, offset);
+    }
+}
+
+function stop() {
+    clickInfinito = false;
+}
+
+function restart(timeout) {
+    clickInfinito = true;
+    simularClick(timeout);
+}
+
+call function: simularClick(80);
