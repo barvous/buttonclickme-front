@@ -57,3 +57,46 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+
+
+Script para teste do anticheat:
+
+
+/**
+
+* Função para simular cliques automatizados.
+* @param {string} buttonSelector - O seletor do botão no DOM.
+* @param {number} totalClicks - Quantidade total de cliques simulados.
+* @param {number} intervalBetweenClicks - Intervalo entre cliques (em milissegundos).
+  */
+  function simulateClicks(buttonSelector, totalClicks, intervalBetweenClicks) {
+  const button = document.querySelector(buttonSelector);
+
+  if (!button) {
+    console.error('Botão não encontrado!');
+    return;
+  }
+
+  console.log('Iniciando teste de cliques automatizados...');
+
+  let clickCount = 0;
+
+  const clickInterval = setInterval(() => {
+    if (clickCount >= totalClicks) {
+      clearInterval(clickInterval);
+      console.log('Teste concluído!');
+      return;
+    }
+
+    button.click();
+    console.log(`Clique ${clickCount + 1} enviado`);
+
+    clickCount++;
+  }, intervalBetweenClicks);
+}
+
+
+
+call function: simulateClicks('.principal-button', 50, 100);
